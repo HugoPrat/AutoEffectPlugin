@@ -62,6 +62,9 @@ juce_add_plugin("${PROJECT_NAME}"
 # C++20 please
 target_compile_features("${PROJECT_NAME}" PRIVATE cxx_std_20)
 
+#Add preprocessor definition to notify in codes that cmake has been used
+add_compile_definitions(WITH_CMAKE)
+
 # Manually list all .h and .cpp files for the plugin (avoiding globs):
 set(SourceFiles
     Source/PluginEditor.h
@@ -69,17 +72,36 @@ set(SourceFiles
     Source/EffectProcessors.h
     Source/PluginEditor.cpp
     Source/PluginProcessor.cpp
-    Source/EffectProcessors.cpp)
+    Source/EffectProcessors.cpp
+    Source/dropFileZone.h
+    Source/OverrideJuce/StandaloneApp.h
+    Source/OverrideJuce/StandaloneApp.cpp
+    Source/UI/GenericGrid.cpp
+    Source/UI/GenericGrid.h
+    Source/UI/IconButton.h
+    Source/UI/ResponsiveLabel.h
+    )
+
+set(DawGenFiles
+    DawGen_shared/UIElements/SelectFileButton.cpp
+    DawGen_shared/UIElements/SelectFileButton.h
+    )
+
 target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
+target_sources("${PROJECT_NAME}" PRIVATE ${DawGenFiles})
+#Add JuceLibraryCode path to include paths, allowing to include JuceHeaders in code
+target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
+target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/DawGen_shared)
 
 # No, we don't want our source buried in extra nested folders
 set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
 
 # The Xcode source tree should uhhh, still look like the source tree, yo
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
+source_group(DawGen_shared PREFIX "" FILES ${DawGenFiles})
 
 # Setup our binary data as a target
-juce_add_binary_data(Assets SOURCES Ressources/encoderOlesia15_r50_4.pt)
+juce_add_binary_data(Assets SOURCES Ressources/icon_drop.png)
 
 # Required for Linux happiness:
 # See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2
@@ -129,6 +151,9 @@ target_compile_definitions("${PROJECT_NAME}"
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
+# find_package(Torch REQUIRED)
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+
 target_link_libraries("${PROJECT_NAME}"
     PRIVATE
     Assets
@@ -137,7 +162,19 @@ target_link_libraries("${PROJECT_NAME}"
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
+#    ${TORCH_LIBRARIES})
 
+#[[if (MSVC)
+    file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+    add_custom_command(TARGET "${PROJECT_NAME}"
+                       POST_BUILD
+                       COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                       ${TORCH_DLLS}
+                       $<TARGET_FILE_DIR:"${PROJECT_NAME}">)
+endif (MSVC)]]
+
+
+# ========TEST PART=========
 # Required for ctest (which is just easier for cross-platform CI)
 # include(CTest) does this too, but adds tons of targets we don't want
 # See: https://github.com/catchorg/Catch2/issues/2026
