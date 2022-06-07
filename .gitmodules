@@ -1,3 +1,6 @@
 [submodule "JUCE"]
 	path = JUCE
 	url = git@github.com:juce-framework/JUCE.git
+[submodule "DawGen_shared"]
+	path = DawGen_shared
+	url = git@github.com:SonyCSLParis/DawGen_shared.git
