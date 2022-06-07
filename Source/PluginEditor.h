@@ -9,13 +9,18 @@
 #pragma once
 
 #include "PluginProcessor.h"
+#include "dropFileZone.h"
+#include "UI/GenericGrid.h"
+#include "UIElements/SelectFileButton.h"
 
 //==============================================================================
 /**
 */
 class AutoEffectsAudioProcessorEditor  : public juce::AudioProcessorEditor,
                                          public juce::Timer,
-                                         public juce::Button::Listener
+                                         public juce::Button::Listener,
+                                         public SelectFileButton::Listener,
+                                         public dropFileZone::Listener
 {
 public:
     AutoEffectsAudioProcessorEditor (AutoEffectsAudioProcessor&);
@@ -41,10 +46,14 @@ private:
     // access the processor object that created it.
     AutoEffectsAudioProcessor& audioProcessor;
     
-    std::unique_ptr<juce::Label> numberOfFilter;
+    std::unique_ptr<GenericGrid> mainGrid;
+    std::unique_ptr<juce::Label> dropFileLabel;
+    std::unique_ptr<juce::Label> dropFileLabel2;
+    std::unique_ptr<ImageButton> dropImage;
+    std::unique_ptr<SelectFileButton> browseFileButton;
+    //std::unique_ptr<GroupComponent> gridBound;
+    std::unique_ptr<dropFileZone> dropZone;
     
-    std::unique_ptr<juce::TextButton> add;
-    std::unique_ptr<juce::TextButton> remove;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoEffectsAudioProcessorEditor)
 };
