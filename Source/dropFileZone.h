@@ -38,7 +38,24 @@ public:
     
     bool isInterestedInFileDrag (const StringArray& files) override
     {
-        return true;
+        if (formats.isEmpty())
+            return true;
+        bool isformat = false;
+        
+        for (auto fileName : files) {
+            for (auto format : formats)
+                if (fileName.endsWith (format))
+                    isformat = true;
+            
+            ///Make sure that each files is in right format
+            if (!isformat)
+                return isformat;
+            else
+                isformat = false;
+        }
+        
+        return isformat;
+        
     }
     
     void fileDragEnter (const StringArray& /*files*/, int /*x*/, int /*y*/) override
@@ -75,7 +92,7 @@ public:
         /** Destructor. */
         virtual ~Listener() = default;
         
-        virtual void fileBeingDropInZone(const StringArray& files) {};
+        virtual void fileBeingDropInZone(const StringArray& /*files*/) {}
     };
     
     /** The listener that will reply to callbacks */
@@ -85,6 +102,8 @@ public:
     
     void setCornerSize(float value) { cornerSize = value; }
     
+    void setFormats(StringArray value) { formats = value; }
+    
 private:
     
     /** Whether something is being dragged over */
@@ -93,6 +112,9 @@ private:
     juce::Colour outlineColor = Colours::red;
     
     float cornerSize = 0;
+    
+    ///format of files wanted to be drop ex {.wav, .mp3}
+    StringArray formats;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (dropFileZone)
 };

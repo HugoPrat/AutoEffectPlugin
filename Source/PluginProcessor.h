@@ -56,6 +56,28 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    
+    enum processState {
+        Fail = 0,
+        Process,
+        Success
+    };
+    
+    processState getProcessState() { return processState; }
+    
+    void processAudioFile(const File file)
+    {
+        processState = processState::Process;
+        UIupdate_processing = true;
+
+        ///FOWARD  MODEL DO STUFF
+        for (int i = 0; i != 100000; ) {
+            i++;
+        }
+        
+        //        processState = processState::Success;
+        //        UIupdate_processing = true;
+    }
 
     int getNumberOfEffect() { return numberOfEffect; }
     void setNumberOfEffect(int value) {
@@ -154,6 +176,9 @@ public:
     }
     
     bool NeedToUpdateGraph = true;
+    bool processing = false;
+
+    bool UIupdate_processing = false;
     
 private:
     
@@ -167,6 +192,8 @@ private:
     juce::Array<Node::Ptr> nodes;
     
     int numberOfEffect = 0;
+    
+    processState processState = processState::Fail;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoEffectsAudioProcessor)

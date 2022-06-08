@@ -80,6 +80,7 @@ set(SourceFiles
     Source/UI/GenericGrid.h
     Source/UI/IconButton.h
     Source/UI/ResponsiveLabel.h
+    Source/UI/LoadingWaitingScreen.h
     )
 
 set(DawGenFiles

@@ -30,16 +30,12 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     dropFileLabel->setEditable (false, false, false);
     dropFileLabel->setColour (juce::Label::textColourId, Colour(113,114,123));
     
-//    dropFileLabel->setBounds(180, 100, 80, 24);
-    
     dropFileLabel2.reset (new juce::Label ("dropLabel2", "Or"));
     addAndMakeVisible (dropFileLabel2.get());
     dropFileLabel2->setFont (juce::Font (15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     dropFileLabel2->setJustificationType (juce::Justification::centred);
     dropFileLabel2->setEditable (false, false, false);
     dropFileLabel2->setColour (juce::Label::textColourId, Colour(200,206,214));
-    
-//    dropFileLabel2->setBounds(40, 50, 100, 24);
     
     browseFileButton.reset (new SelectFileButton ("exportMidiButton"));
     addAndMakeVisible (browseFileButton.get());
@@ -54,8 +50,16 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     dropZone->setAlwaysOnTop(true);
     dropZone->setCornerSize(10.f);
     dropZone->setColorOutline(Colour(229, 226, 233));
+    dropZone->setFormats({".wav", ".mp3"});
     dropZone->listener = this;
     addAndMakeVisible(dropZone.get());
+    
+    loadingWaitingScreen.reset(new LoadingWaitingScreen());
+    addAndMakeVisible(loadingWaitingScreen.get());
+    loadingWaitingScreen->setName("loadingWaitingScreen");
+    
+    loadingWaitingScreen->setAlwaysOnTop(true);
+    loadingWaitingScreen->setVisible(false);
     
     using Track = juce::Grid::TrackInfo;
     Array<ExceptionGrid> params;
@@ -64,7 +68,6 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     mainGrid.reset(new GenericGrid({Track (3_fr), Track (1_fr), Track (1_fr), Track (3_fr)}, {Track (1_fr)},
                                         {dropImage.get(), dropFileLabel.get(), dropFileLabel2.get(), browseFileButton.get()},
                                         params
-//                                        {1, 2}
                                         ));
     mainGrid->setBackground(juce::Colour (245, 246, 252));
     mainGrid->setCornerSize(10.f);
@@ -73,6 +76,8 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     
     setSize (400, 300);
     
+    getLookAndFeel().setUsingNativeAlertWindows(true);
+    
     startTimer(50.);
 }
 
@@ -80,6 +85,7 @@ AutoEffectsAudioProcessorEditor::~AutoEffectsAudioProcessorEditor()
 {
     dropFileLabel = nullptr;
     dropZone = nullptr;
+    loadingWaitingScreen = nullptr;
     
     stopTimer();
 }
@@ -95,6 +101,8 @@ void AutoEffectsAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+    loadingWaitingScreen->setBounds(getLocalBounds());
+    
     auto reducedBound = getLocalBounds().reduced(30);
     mainGrid->setBounds(reducedBound);
     dropZone->setBounds(reducedBound);
