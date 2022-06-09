@@ -46,11 +46,11 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     browseFileButton.reset (new SelectFileButton ("exportMidiButton"));
     addAndMakeVisible (browseFileButton.get());
     browseFileButton->setButtonText (TRANS("Browse files"));
-    browseFileButton->addListener (this);
+    browseFileButton->listener = this;
     browseFileButton->setColour (juce::TextButton::buttonColourId, juce::Colour (77,94,251));
+    browseFileButton->setColour (juce::TextButton::buttonOnColourId, juce::Colour (77,94,251));
     browseFileButton->setColour (juce::TextButton::textColourOffId, juce::Colour(245, 246, 252));
-
-    browseFileButton->setBounds (1048, 232, 80, 24);
+    browseFileButton->setAcceptedTypes({".wav", ".mp3"});
     
     dropZone.reset(new dropFileZone());
     dropZone->setAlwaysOnTop(true);
@@ -138,5 +138,12 @@ void AutoEffectsAudioProcessorEditor::buttonClicked (juce::Button* buttonThatWas
 {
     if (buttonThatWasClicked == cancelButton.get()) {
         audioProcessor.resetPlugin();
+    }
+}
+
+void AutoEffectsAudioProcessorEditor::selectFileButtonDidSelectNewFiles(SelectFileButton* button, StringArray files, Array<URL> /*urls*/)
+{
+    if (button == browseFileButton.get()) {
+        audioProcessor.processAudioFile(File(files[0]));
     }
 }

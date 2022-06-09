@@ -84,10 +84,17 @@ public:
         }
         audioProcessor.processAudioFile(File(files[0]));
     }
-
+    
+    void clickDownOnZone(const MouseEvent &event) override
+    {
+        browseFileButton->mouseDown(event);
+    }
     
     void buttonClicked (juce::Button* buttonThatWasClicked) override;
+    void selectFileButtonDidSelectNewFiles(SelectFileButton* button, StringArray files, Array<URL> urls) override;
 
+    
+    
 private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.

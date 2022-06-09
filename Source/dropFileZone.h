@@ -16,7 +16,7 @@ class dropFileZone   : public juce::Component, public FileDragAndDropTarget
 {
 public:
     dropFileZone() = default;
-    ~dropFileZone() = default;
+    ~dropFileZone() override = default;
     
     void paint (juce::Graphics& g) override
     {
@@ -30,6 +30,12 @@ public:
     void resized() override
     {
         repaint();
+    }
+    
+    void mouseDown(const MouseEvent &event) override
+    {
+        if (listener != nullptr)
+            listener->clickDownOnZone(event);
     }
     
     //==============================================================================
@@ -92,6 +98,8 @@ public:
         virtual ~Listener() = default;
         
         virtual void fileBeingDropInZone(const StringArray& /*files*/) {}
+        
+        virtual void clickDownOnZone(const MouseEvent &) {}
     };
     
     /** The listener that will reply to callbacks */
