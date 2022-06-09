@@ -9,6 +9,8 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+#include <torch/torch.h>
+
 //==============================================================================
 AutoEffectsAudioProcessor::AutoEffectsAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -22,6 +24,7 @@ AutoEffectsAudioProcessor::AutoEffectsAudioProcessor()
                        ), processGraph(new juce::AudioProcessorGraph())
 #endif
 {
+    at::Tensor tensor = torch::rand({2, 3});
 }
 
 AutoEffectsAudioProcessor::~AutoEffectsAudioProcessor()
