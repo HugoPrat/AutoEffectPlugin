@@ -150,6 +150,6 @@ private:
     float rate = 50.f;
     float depth = 0.5f;
     float centreDelay = 50.f;
-    float feedback = 0.5f;
+    float feedback = 0.f;
     float mix = 0.75f;
 };

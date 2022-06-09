@@ -75,7 +75,7 @@ void ChorusUiBlock::setComponents()
 
     rateSlider.reset (new juce::Slider ("rateSlider"));
     addAndMakeVisible (rateSlider.get());
-    rateSlider->setRange (0, 100, 1);
+    rateSlider->setRange (0, 99, 1);
     rateSlider->setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     rateSlider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 30, 10);
     rateSlider->setValue(effectProcess->getRate());
@@ -93,7 +93,7 @@ void ChorusUiBlock::setComponents()
     
     delaySlider.reset (new juce::Slider ("delaySlider"));
     addAndMakeVisible (delaySlider.get());
-    delaySlider->setRange (1, 100, 1);
+    delaySlider->setRange (0, 99, 1);
     delaySlider->setSliderStyle (juce::Slider::RotaryHorizontalVerticalDrag);
     delaySlider->setTextBoxStyle (juce::Slider::TextBoxBelow, false, 30, 10);
     delaySlider->setValue(effectProcess->getCentreDelay());
