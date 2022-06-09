@@ -71,12 +71,11 @@ public:
         UIupdate_processing = true;
 
         ///FOWARD  MODEL DO STUFF
-        for (int i = 0; i != 100000; ) {
-            i++;
-        }
+        numberOfEffect = 1;
+        NeedToUpdateGraph = true;
         
-        //        processState = processState::Success;
-        //        UIupdate_processing = true;
+        processState = processState::Success;
+        UIupdate_processing = true;
     }
 
     int getNumberOfEffect() { return numberOfEffect; }
@@ -85,6 +84,23 @@ public:
             value = 0;
         numberOfEffect = value;
         NeedToUpdateGraph = true;
+    }
+    
+    AudioProcessor* getaudioProcessFromIndex(int i) {
+        if (i < 0 || i > nodes.size())
+            return nullptr;
+        return nodes[i]->getProcessor();
+    }
+    
+    void resetPlugin() {
+        numberOfEffect = 0;
+        
+        for (auto node : nodes)
+            processGraph->removeNode(node.get());
+        nodes.clear();
+        
+        NeedToUpdateGraph = true;
+        UIupdate_EffectBlocks = true;
     }
     
     void initialiseGraph() {
@@ -127,7 +143,7 @@ public:
         ///Need to adding in array from a dataset
         ///TMP
         for (int i = 0 ; i != numberOfEffect; i++) {
-            nodes.add(processGraph->addNode (std::make_unique<FilterProcessor>()));
+            nodes.add(processGraph->addNode (std::make_unique<ChorusProcessor>()));
         }
         
         ///Remove all connections
@@ -173,12 +189,15 @@ public:
 
         }
         
+        UIupdate_EffectBlocks = true;
+        
     }
     
     bool NeedToUpdateGraph = true;
     bool processing = false;
 
     bool UIupdate_processing = false;
+    bool UIupdate_EffectBlocks = false;
     
 private:
     

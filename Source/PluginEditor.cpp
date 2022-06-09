@@ -23,7 +23,13 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
     dropImage->setImages(false, true, true, ImageCache::getFromMemory (BinaryData::icon_drop_png, BinaryData::icon_drop_pngSize), 1.f, Colour (77,94,251), juce::Image(), 1.000f, juce::Colour (77,94,251), ImageCache::getFromMemory (BinaryData::icon_drop_png, BinaryData::icon_drop_pngSize), 1.f, Colour (77,94,251));
     dropImage->setBounds(0, 0, 100, 54);
     
-    dropFileLabel.reset (new juce::Label ("dropLabel", TRANS("Drag your target sound here to process")));
+    cancelButton.reset(new ImageButton("cancelButton"));
+    addAndMakeVisible(cancelButton.get());
+    cancelButton->addListener(this);
+    cancelButton->setImages(false, true, true, ImageCache::getFromMemory (BinaryData::icon_cancel_png, BinaryData::icon_cancel_pngSize), 1.f, Colour (77,94,251), juce::Image(), 1.000f, juce::Colour (77,94,251), ImageCache::getFromMemory (BinaryData::icon_cancel_png, BinaryData::icon_cancel_pngSize), 1.f, Colour (32,42,131));
+    cancelButton->setBounds(3, 3, 25, 25);
+    
+    dropFileLabel.reset (new juce::Label ("dropLabel", TRANS("Drop your target sound here to process")));
     addAndMakeVisible (dropFileLabel.get());
     dropFileLabel->setFont (juce::Font (15.00f, juce::Font::plain).withTypefaceStyle ("Regular"));
     dropFileLabel->setJustificationType (juce::Justification::centred);
@@ -84,8 +90,14 @@ AutoEffectsAudioProcessorEditor::AutoEffectsAudioProcessorEditor (AutoEffectsAud
 AutoEffectsAudioProcessorEditor::~AutoEffectsAudioProcessorEditor()
 {
     dropFileLabel = nullptr;
+    dropFileLabel2 = nullptr;
+    dropImage = nullptr;
+    browseFileButton = nullptr;
+    cancelButton = nullptr;
+    
     dropZone = nullptr;
     loadingWaitingScreen = nullptr;
+    chorusBlock = nullptr;
     
     stopTimer();
 }
@@ -101,31 +113,30 @@ void AutoEffectsAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-    loadingWaitingScreen->setBounds(getLocalBounds());
+    auto bounds = getLocalBounds();
     
-    auto reducedBound = getLocalBounds().reduced(30);
+    loadingWaitingScreen->setBounds(bounds);
+    
+    auto reducedBound = bounds.reduced(30);
     mainGrid->setBounds(reducedBound);
     dropZone->setBounds(reducedBound);
+    if (!showEffects) {
+        mainGrid->setVisible(true);
+        dropZone->setVisible(true);
+        cancelButton->setVisible(false);
+        if (chorusBlock)
+            chorusBlock->setVisible(false);
+    } else {
+        chorusBlock->setBounds(reducedBound);
+        cancelButton->setVisible(true);
+        mainGrid->setVisible(false);
+        dropZone->setVisible(false);
+    }
 }
 
 void AutoEffectsAudioProcessorEditor::buttonClicked (juce::Button* buttonThatWasClicked)
 {
-    /*if (buttonThatWasClicked == add.get()) {
-        
-        if (audioProcessor.NeedToUpdateGraph)
-            return;
-        audioProcessor.setNumberOfEffect(audioProcessor.getNumberOfEffect() + 1);
-        
-        numberOfFilter->setText(juce::String(audioProcessor.getNumberOfEffect()) + " filter on", juce::NotificationType::dontSendNotification);
-        
-    } else if (buttonThatWasClicked == remove.get()) {
-        
-        if (audioProcessor.NeedToUpdateGraph)
-            return;
-        audioProcessor.setNumberOfEffect(audioProcessor.getNumberOfEffect() - 1);
-        
-        numberOfFilter->setText(juce::String(audioProcessor.getNumberOfEffect()) + " filter on", juce::NotificationType::dontSendNotification);
-        
-    }*/
-    
+    if (buttonThatWasClicked == cancelButton.get()) {
+        audioProcessor.resetPlugin();
+    }
 }

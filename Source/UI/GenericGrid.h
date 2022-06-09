@@ -68,7 +68,7 @@ public:
         //bound->setBounds(getLocalBounds());
         
         juce::Grid grid;
-        using Track = juce::Grid::TrackInfo;
+        //using Track = juce::Grid::TrackInfo;
         
         bounds = bounds.reduced(margin);
         grid.rowGap = Grid::Px(rowGap);

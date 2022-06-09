@@ -81,6 +81,8 @@ set(SourceFiles
     Source/UI/IconButton.h
     Source/UI/ResponsiveLabel.h
     Source/UI/LoadingWaitingScreen.h
+    Source/UI/EffectBlocks.cpp
+    Source/UI/EffectBlocks.h
     )
 
 set(DawGenFiles
@@ -102,7 +104,11 @@ source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFil
 source_group(DawGen_shared PREFIX "" FILES ${DawGenFiles})
 
 # Setup our binary data as a target
-juce_add_binary_data(Assets SOURCES Ressources/icon_drop.png)
+set(AssetsFiles
+    Ressources/icon_drop.png
+    Ressources/icon_cancel.png
+)
+juce_add_binary_data(Assets SOURCES ${AssetsFiles})
 
 # Required for Linux happiness:
 # See https://forum.juce.com/t/loading-pytorch-model-using-binarydata/39997/2

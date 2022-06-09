@@ -43,6 +43,7 @@ public:
         bool isformat = false;
         
         for (auto fileName : files) {
+            isformat = false;
             for (auto format : formats)
                 if (fileName.endsWith (format))
                     isformat = true;
@@ -50,8 +51,6 @@ public:
             ///Make sure that each files is in right format
             if (!isformat)
                 return isformat;
-            else
-                isformat = false;
         }
         
         return isformat;

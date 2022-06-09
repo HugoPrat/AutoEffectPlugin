@@ -10,8 +10,8 @@
 
 #include "PluginProcessor.h"
 #include "dropFileZone.h"
-#include "UI/GenericGrid.h"
 #include "UI/LoadingWaitingScreen.h"
+#include "UI/EffectBlocks.h"
 #include "UIElements/SelectFileButton.h"
 
 //==============================================================================
@@ -53,6 +53,23 @@ public:
 
             }
         }
+        
+        if (audioProcessor.UIupdate_EffectBlocks) {
+            audioProcessor.UIupdate_EffectBlocks = false;
+            
+            if (audioProcessor.getNumberOfEffect() == 0) {
+                showEffects = false;
+                chorusBlock = nullptr;
+            } else {
+                AudioProcessor* first = audioProcessor.getaudioProcessFromIndex(0);
+                if (first != nullptr) {
+                    chorusBlock.reset(new ChorusUiBlock(first));
+                    addAndMakeVisible(*chorusBlock);
+                    showEffects = true;
+                }
+            }
+            resized();
+        }
     }
     
     //===================================================
@@ -83,8 +100,14 @@ private:
     std::unique_ptr<ImageButton> dropImage;
     std::unique_ptr<SelectFileButton> browseFileButton;
 
+    std::unique_ptr<ImageButton> cancelButton;
+    
     std::unique_ptr<dropFileZone> dropZone;
     std::unique_ptr<LoadingWaitingScreen> loadingWaitingScreen;
+
+    std::unique_ptr<ChorusUiBlock> chorusBlock;
+    
+    bool showEffects = false;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AutoEffectsAudioProcessorEditor)
