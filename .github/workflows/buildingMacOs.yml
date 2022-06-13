@@ -5,7 +5,7 @@ on:
     branches: [ "CICD_test" ]
   workflow_call:
     secrets:
-      access-token:
+      ACCESS_TOKEN:
         description: 'A token passed from the caller workflow'
         required: true
 
