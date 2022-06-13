@@ -3,6 +3,12 @@ name: CI CD
 on:
   push:
     branches: [ "CICD_test" ]
+  workflow_call:
+    secrets:
+      access-token:
+        description: 'A token passed from the caller workflow'
+        required: true
+
 #  pull_request:
 #    branches: [ "main" ]
 
@@ -15,7 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
       with:
-        token: ${{ secrets.MY_GITHUB_PAT }}
+        token: ${{ secrets.access-token }}
     - name: Download Libtorch
       run: ./downloadLastestLibtorch.sh
     - name: Checkout submodules using a PAT
