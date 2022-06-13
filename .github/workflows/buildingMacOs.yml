@@ -16,7 +16,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-#      with:
+      with:
+        submodules: 'recursive'
 #        token: ${{ secrets.ACCESS_TOKEN }}
     - name: see env
       run: env
