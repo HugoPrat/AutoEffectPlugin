@@ -14,6 +14,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.MY_GITHUB_PAT }}
     - name: Download Libtorch
       run: ./downloadLastestLibtorch.sh
     - name: Checkout submodules using a PAT
