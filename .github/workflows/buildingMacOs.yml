@@ -9,7 +9,7 @@ on:
 
 jobs:
   #build:
-  Build MacOs:
+  Build_MacOs:
 
     #runs-on: ubuntu-latest
     runs-on: macos-latest
