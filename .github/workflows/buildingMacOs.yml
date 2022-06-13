@@ -16,11 +16,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      #with:
-      #  submodules: 'recursive'
-      #  token: ${{ secrets.ACCESS_TOKEN }}
+      with:
+        submodules: 'recursive'
+        token: ${{ secrets.ACCESS_TOKEN }}
     - name: see env
-      run: echo $secrets
+      run: echo ${{ secrets.ACCESS_TOKEN }}
     #- name: Download Libtorch
     #  run: ./downloadLastestLibtorch.sh
 #    - name: Checkout submodules using a PAT
