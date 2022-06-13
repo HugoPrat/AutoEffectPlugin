@@ -7,7 +7,7 @@ on:
     secrets:
       ACCESS_TOKEN:
         description: 'A token passed from the caller workflow'
-        required: true
+        required: false
 
 #  pull_request:
 #    branches: [ "main" ]
