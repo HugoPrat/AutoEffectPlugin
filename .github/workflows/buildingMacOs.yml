@@ -2,7 +2,7 @@ name: C/C++ CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "CICD_test" ]
 #  pull_request:
 #    branches: [ "main" ]
 
@@ -14,8 +14,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Download_Libtorch
+    - name: Download Libtorch
       run: ./downloadLastestLibtorch.sh
+    - name: Initialize submodules
+      run: git submodule update --init --recursive
     - name: generate xcode 
       run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
     - name: build all target
