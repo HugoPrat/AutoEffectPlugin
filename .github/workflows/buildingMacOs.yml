@@ -13,26 +13,26 @@ on:
 #    branches: [ "main" ]
 
 jobs:
-  build:
+  #build:
+  pass-secret-to-action:
 
     #runs-on: ubuntu-latest
-    pass-secret-to-action:
-      runs-on: macos-latest
+    runs-on: macos-latest
 
-      steps:
-      - uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.ACCESS_TOKEN }}
-      - name: Download Libtorch
-        run: ./downloadLastestLibtorch.sh
-      - name: Checkout submodules using a PAT
-        run: |
-          git config --file .gitmodules --get-regexp url | while read url; do
-          git config --file=.gitmodules $(echo "$url" | sed -E "s/git@github.com:|https:\/\/github.com\//https:\/\/${{ secrets.CI_PAT }}:${{ secrets.CI_PAT }}@github.com\//")
-          done
-          git submodule sync
-          git submodule update --init --recursive
-      - name: generate xcode 
-        run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
-      - name: build all target
-        run: cmake --build Builds --config Release
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.ACCESS_TOKEN }}
+    - name: Download Libtorch
+      run: ./downloadLastestLibtorch.sh
+    - name: Checkout submodules using a PAT
+      run: |
+        git config --file .gitmodules --get-regexp url | while read url; do
+        git config --file=.gitmodules $(echo "$url" | sed -E "s/git@github.com:|https:\/\/github.com\//https:\/\/${{ secrets.CI_PAT }}:${{ secrets.CI_PAT }}@github.com\//")
+        done
+        git submodule sync
+        git submodule update --init --recursive
+    - name: generate xcode 
+      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
+    - name: build all target
+      run: cmake --build Builds --config Release
