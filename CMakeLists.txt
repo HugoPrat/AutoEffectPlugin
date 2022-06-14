@@ -108,6 +108,7 @@ source_group(DawGen_shared PREFIX "" FILES ${DawGenFiles})
 set(AssetsFiles
     Ressources/icon_drop.png
     Ressources/icon_cancel.png
+    Ressources/classifier.pt
 )
 juce_add_binary_data(Assets SOURCES ${AssetsFiles})
 

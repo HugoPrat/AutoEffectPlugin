@@ -12,6 +12,20 @@
 
 #include "CustomJuceHeader.h"
 
+enum EffectEnum {
+    Dry = 0,
+    FeedBackDelay,
+    SlapbackDelay,
+    Reverb,
+    Chorus,
+    Flanger,
+    Phaser,
+    Tremolo,
+    Vibrato,
+    Distortion,
+    Overdrive
+};
+
 //==============================================================================
 class ProcessorBase  : public juce::AudioProcessor
 {

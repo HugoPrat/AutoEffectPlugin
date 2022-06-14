@@ -62,11 +62,12 @@ class ChorusUiBlock : public Component,
                       public juce::Slider::Listener
 {
 public:
-    ChorusUiBlock(AudioProcessor* p) {
+    ChorusUiBlock(AudioProcessor* p, String name) {
         if (p != nullptr && p->getName() == "Chorus") {
             effectProcess = dynamic_cast<ChorusProcessor *>(p);
         } else
             throw "BAD Association effect Block UI";
+        _name = name;
         setComponents();
     }
     ~ChorusUiBlock() override;
@@ -102,6 +103,7 @@ private:
     RotaryLookAndFeel lf;
     
     juce::Colour backgroundColour;
+    String _name;
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusUiBlock)

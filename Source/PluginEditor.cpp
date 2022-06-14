@@ -6,8 +6,6 @@
   ==============================================================================
 */
 
-#include <BinaryData.h>
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
@@ -144,6 +142,6 @@ void AutoEffectsAudioProcessorEditor::buttonClicked (juce::Button* buttonThatWas
 void AutoEffectsAudioProcessorEditor::selectFileButtonDidSelectNewFiles(SelectFileButton* button, StringArray files, Array<URL> /*urls*/)
 {
     if (button == browseFileButton.get()) {
-        audioProcessor.processAudioFile(File(files[0]));
+        audioProcessor.setTargetToProcess(File(files[0]));
     }
 }

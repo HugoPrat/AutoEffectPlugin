@@ -35,6 +35,34 @@ public:
     // MARK: - Timer class methods
     //==============================================================================
 
+    String nameFromEffectEnum(EffectEnum value)
+    {
+        switch (value) {
+            case EffectEnum::Dry:
+                return "Dry";
+            case EffectEnum::FeedBackDelay:
+                return "FeedBack Delay";
+            case EffectEnum::SlapbackDelay:
+                return "Slapback Delay";
+            case EffectEnum::Reverb:
+                return "Reverb";
+            case EffectEnum::Chorus:
+                return "Chorus";
+            case EffectEnum::Flanger:
+                return "Flanger";
+            case EffectEnum::Phaser:
+                return "Phaser";
+            case EffectEnum::Tremolo:
+                return "Tremolo";
+            case EffectEnum::Vibrato:
+                return "Vibrato";
+            case EffectEnum::Distortion:
+                return "Distortion";
+            case EffectEnum::Overdrive:
+                return "Overdrive";
+        }
+    }
+    
     void timerCallback() override
     {
         if (audioProcessor.UIupdate_processing) {
@@ -63,7 +91,7 @@ public:
             } else {
                 AudioProcessor* first = audioProcessor.getaudioProcessFromIndex(0);
                 if (first != nullptr) {
-                    chorusBlock.reset(new ChorusUiBlock(first));
+                    chorusBlock.reset(new ChorusUiBlock(first, nameFromEffectEnum(audioProcessor.getEffectChain()[0])));
                     addAndMakeVisible(*chorusBlock);
                     showEffects = true;
                 }
@@ -82,7 +110,7 @@ public:
             //AlertWindow::showMessageBoxAsync(AlertWindow::WarningIcon, "Error", "Only one audio file should be drop", "OK", this, ModalCallbackFunction::create ([] () {}));
             return;
         }
-        audioProcessor.processAudioFile(File(files[0]));
+        audioProcessor.setTargetToProcess(File(files[0]));
     }
     
     void clickDownOnZone(const MouseEvent &event) override

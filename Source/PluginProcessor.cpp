@@ -9,8 +9,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-#include <torch/torch.h>
-
 //==============================================================================
 AutoEffectsAudioProcessor::AutoEffectsAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -21,14 +19,22 @@ AutoEffectsAudioProcessor::AutoEffectsAudioProcessor()
                       #endif
                        .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
                      #endif
-                       ), processGraph(new juce::AudioProcessorGraph())
+                       ), processGraph(new juce::AudioProcessorGraph()),
 #endif
+                        Thread("AutoEffectThread")
 {
-    at::Tensor tensor = torch::rand({2, 3});
+    const char* data = BinaryData::classifier_pt;
+    const int length = BinaryData::classifier_ptSize;
+
+    std::istringstream is(std::string(data, length));
+    classifier = torch::jit::load(is);
+    
+    startThread();
 }
 
 AutoEffectsAudioProcessor::~AutoEffectsAudioProcessor()
 {
+    stopThread(1000);
 }
 
 //==============================================================================
@@ -196,6 +202,99 @@ void AutoEffectsAudioProcessor::setStateInformation (const void* data, int sizeI
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+}
+
+void AutoEffectsAudioProcessor::processAudioFile()
+{
+    AudioFormatManager formatManager;
+    formatManager.registerBasicFormats();
+        
+    // Check that the file exists and that we can have a reader
+    if (!targetFile.existsAsFile())
+    {
+        Logger::writeToLog("Could not find track file " + targetFile.getFileName());
+        processState = processState::Fail;
+        UIupdate_processing = true;
+        return;
+    }
+        
+    std::unique_ptr<AudioFormatReader> reader(formatManager.createReaderFor(targetFile));
+    if (!reader)
+    {
+        Logger::writeToLog("Could not load track from file " + targetFile.getFileName());
+        processState = processState::Fail;
+        UIupdate_processing = true;
+        return;
+    }
+        
+    // Basic properties of the audio buffer
+    int numSamples    = (int)reader->lengthInSamples;
+    double sampleRate = reader->sampleRate;
+    unsigned int numChannels   = reader->numChannels;
+    int targetLength  = 44100;
+        
+    AudioSampleBuffer inputBuffer(numChannels,numSamples);
+    inputBuffer.clear();
+        
+    reader->read(&inputBuffer, 0, numSamples, 0, true, true);
+        
+    std::cout << "DONE" << std::endl;
+        
+    // 1b) Resample
+        
+    std::cout << "Resampling from " << sampleRate << " to " << modelSampleRate  << std::endl;
+        
+    double ratio =  sampleRate / modelSampleRate;
+    int newNumSamples = (int)(((double)numSamples) / ratio);
+        
+    AudioSampleBuffer resampledInputBuffer;
+        
+    if (newNumSamples > targetLength)
+        newNumSamples = targetLength;
+        
+    resampledInputBuffer.setSize(numChannels, targetLength);
+    resampledInputBuffer.clear();
+        
+    ScopedPointer<LagrangeInterpolator> resampler = new LagrangeInterpolator();
+        
+    const float *inputPtr = inputBuffer.getReadPointer(0);
+    float *outputPtr      = resampledInputBuffer.getWritePointer(0);
+        
+    resampler->reset();
+    resampler->process(ratio, inputPtr, outputPtr, newNumSamples);
+        
+    std::cout << "DONE" << std::endl;;
+            
+        //----------------------
+        // 2) Normalize input file
+        
+        //float mag = resampledInputBuffer.getMagnitude(0, newNumSamples);
+        //resampledInputBuffer.applyGain(0, newNumSamples, 1./mag);
+        
+    const float *bufferPtr = resampledInputBuffer.getReadPointer(0);
+        
+    Array<float> bufferData = Array<float>(bufferPtr, targetLength);
+        
+    torch::Tensor input = torch::from_blob(bufferData.data(), {1,targetLength});
+        
+        
+    std::vector<torch::jit::IValue> inputs;
+    inputs.push_back(input);
+
+        
+    auto output = classifier.forward(inputs).toTensor();
+        
+    ///Adding result in array of Effects enum and update graph
+    
+    int result = output.item<int>();
+    DBG(result);
+    
+    
+    effectsChain.add(static_cast<EffectEnum>(result));
+    NeedToUpdateGraph = true;
+    
+    processState = processState::Success;
+    UIupdate_processing = true;
 }
 
 //==============================================================================

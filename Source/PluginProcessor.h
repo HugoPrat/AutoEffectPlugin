@@ -10,10 +10,14 @@
 
 #include "EffectProcessors.h"
 
+#include <BinaryData.h>
+#include <torch/script.h>
+
 //==============================================================================
 /**
 */
-class AutoEffectsAudioProcessor  : public juce::AudioProcessor
+
+class AutoEffectsAudioProcessor  : public juce::AudioProcessor, public Thread
 {
 public:
     
@@ -65,26 +69,22 @@ public:
     
     processState getProcessState() { return processState; }
     
-    void processAudioFile(const File file)
+    void setTargetToProcess(const File audioFile)
     {
         processState = processState::Process;
         UIupdate_processing = true;
-
-        ///FOWARD  MODEL DO STUFF
-        numberOfEffect = 1;
-        NeedToUpdateGraph = true;
         
-        processState = processState::Success;
-        UIupdate_processing = true;
+        targetFile = audioFile;
+        
+        ///Set flag for 'run' fonction in Thread
+        hasTargetToProcess = true;
     }
+    
+    void processAudioFile();
+    
+    Array<EffectEnum> &getEffectChain() { return effectsChain; }
 
-    int getNumberOfEffect() { return numberOfEffect; }
-    void setNumberOfEffect(int value) {
-        if (value < 0)
-            value = 0;
-        numberOfEffect = value;
-        NeedToUpdateGraph = true;
-    }
+    int getNumberOfEffect() { return effectsChain.size(); }
     
     AudioProcessor* getaudioProcessFromIndex(int i) {
         if (i < 0 || i > nodes.size())
@@ -93,7 +93,7 @@ public:
     }
     
     void resetPlugin() {
-        numberOfEffect = 0;
+        effectsChain.clear();
         
         for (auto node : nodes)
             processGraph->removeNode(node.get());
@@ -140,9 +140,8 @@ public:
             processGraph->removeNode(node.get());
         nodes.clear();
         
-        ///Need to adding in array from a dataset
-        ///TMP
-        for (int i = 0 ; i != numberOfEffect; i++) {
+        ///adding in array from a dataset
+        for (int i = 0 ; i < effectsChain.size(); i++) {
             nodes.add(processGraph->addNode (std::make_unique<ChorusProcessor>()));
         }
         
@@ -199,7 +198,25 @@ public:
     bool UIupdate_processing = false;
     bool UIupdate_EffectBlocks = false;
     
+protected:
+    
+    void run() override
+    {
+        while (!threadShouldExit())
+        {
+            if (hasTargetToProcess) {
+                hasTargetToProcess = false;
+                
+                processAudioFile();
+                
+            }
+            wait (100);
+        }
+    }
+    
 private:
+    
+    torch::jit::script::Module classifier;
     
     std::unique_ptr<juce::AudioProcessorGraph> processGraph;
     
@@ -210,7 +227,15 @@ private:
 
     juce::Array<Node::Ptr> nodes;
     
-    int numberOfEffect = 0;
+    File targetFile;
+    
+    bool hasTargetToProcess = false;
+    
+    //int numberOfEffect = 0;
+    
+    Array<EffectEnum> effectsChain;
+    
+    float modelSampleRate = 22050.f;
     
     processState processState = processState::Fail;
     

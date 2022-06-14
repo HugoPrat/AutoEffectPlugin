@@ -31,7 +31,7 @@ ChorusUiBlock::~ChorusUiBlock()
 
 void ChorusUiBlock::setComponents()
 {
-    mainLabel.reset (new juce::Label ("mainLabel", "Chorus"));
+    mainLabel.reset (new juce::Label ("mainLabel", _name));
     addAndMakeVisible (mainLabel.get());
     mainLabel->setFont (juce::Font (35.00f, juce::Font::bold).withTypefaceStyle ("Regular"));
     mainLabel->setJustificationType (juce::Justification::centred);
