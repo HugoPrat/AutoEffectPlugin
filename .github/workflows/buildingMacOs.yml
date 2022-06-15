@@ -40,7 +40,7 @@ jobs:
     - name: Unzip it
       run: unzip libtorch-cxx11-abi-shared-with-deps-1.11.0+cpu.zip
     - name: Install pre-requis
-      -run: sudo apt install libx11-dev
+      run: sudo apt install libx11-dev
     - name: Generate targets
       run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
     - name: build all target
