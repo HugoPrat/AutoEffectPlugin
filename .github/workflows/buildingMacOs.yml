@@ -30,5 +30,7 @@ jobs:
 #        git submodule update --init --recursive
 #    - name: generate xcode 
 #      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
+    - name: Configure
+        run: cmake -B Builds
     - name: build all target
-      run: cmake --build Builds --config Debug
+      run: cmake --build Builds --config Release
