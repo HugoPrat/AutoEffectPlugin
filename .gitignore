@@ -3,6 +3,7 @@
 
 #JUCE
 JuceLibraryCode/
+Builds/*
 
 # Compiled Object files
 *.slo

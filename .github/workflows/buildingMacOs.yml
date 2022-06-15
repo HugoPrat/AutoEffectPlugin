@@ -20,7 +20,9 @@ jobs:
         ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
         submodules: 'recursive'
     - name: Download Libtorch
-      run: ./downloadLastestLibtorch.sh
+      run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+    - name: Unzip it
+      run: unzip libtorch-macos-1.11.0.zip
 #    - name: Checkout submodules using a PAT
 #      run: |
 #        git config --file .gitmodules --get-regexp url | while read url; do
