@@ -5,25 +5,25 @@ on:
     branches: [ "CICD_test" ]
 
 jobs:
-  Build_MacOs:
-
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
-        submodules: 'recursive'
-    - name: Download Libtorch
-      run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
-    - name: Unzip it
-      run: unzip libtorch-macos-1.11.0.zip
-    - name: Generate targets
-      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
-    - name: build all target
-      run: cmake --build Builds --config Release
-    - name: Running tests
-      run: ./Builds/Tests
+#  Build_MacOs:
+#
+#    runs-on: macos-latest
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#      with:
+#        ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
+#        submodules: 'recursive'
+#    - name: Download Libtorch
+#      run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+#    - name: Unzip it
+#      run: unzip libtorch-macos-1.11.0.zip
+#    - name: Generate targets
+#      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+#    - name: build all target
+#      run: cmake --build Builds --config Release
+#    - name: Running tests
+#      run: ./Builds/Tests
 
 
   Build_Linux:
@@ -39,6 +39,8 @@ jobs:
       run: wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
     - name: Unzip it
       run: unzip libtorch-cxx11-abi-shared-with-deps-1.11.0+cpu.zip
+    -name: Install pre-requis
+      -run: sudo apt install libx11-dev
     - name: Generate targets
       run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
     - name: build all target
