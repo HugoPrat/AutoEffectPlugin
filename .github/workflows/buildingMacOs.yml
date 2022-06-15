@@ -28,7 +28,7 @@ jobs:
 #        done
 #        git submodule sync
 #        git submodule update --init --recursive
-    - name: generate xcode 
-      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
+#    - name: generate xcode 
+#      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
     - name: build all target
-      run: cmake --build Builds --config Release
+      run: cmake --build Builds --config Debug
