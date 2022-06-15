@@ -19,8 +19,8 @@ jobs:
       with:
         ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
         submodules: 'recursive'
-    #- name: Download Libtorch
-    #  run: ./downloadLastestLibtorch.sh
+    - name: Download Libtorch
+      run: ./downloadLastestLibtorch.sh
 #    - name: Checkout submodules using a PAT
 #      run: |
 #        git config --file .gitmodules --get-regexp url | while read url; do
@@ -28,7 +28,7 @@ jobs:
 #        done
 #        git submodule sync
 #        git submodule update --init --recursive
-#    - name: generate xcode 
-#      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
-#    - name: build all target
-#      run: cmake --build Builds --config Release
+    - name: generate xcode 
+      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
+    - name: build all target
+      run: cmake --build Builds --config Release
