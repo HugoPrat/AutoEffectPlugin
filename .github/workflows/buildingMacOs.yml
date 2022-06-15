@@ -33,4 +33,4 @@ jobs:
     #- name: Configure
     #  run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds
     - name: build all target
-      run: cmake -DCMAKE_PREFIX_PATH=./libtorch --build Builds --config Release
+      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
