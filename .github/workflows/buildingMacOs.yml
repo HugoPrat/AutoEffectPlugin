@@ -34,3 +34,5 @@ jobs:
     #  run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds
     - name: build all target
       run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+    - name: Oui
+      run: cmake --build Builds --config Release
