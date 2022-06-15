@@ -31,6 +31,6 @@ jobs:
 #    - name: generate xcode 
 #      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds -G Xcode
     - name: Configure
-      run: cmake -B Builds
+      run: cmake -DCMAKE_PREFIX_PATH=./libtorch -B Builds
     - name: build all target
       run: cmake --build Builds --config Release
