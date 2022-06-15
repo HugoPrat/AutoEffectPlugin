@@ -11,7 +11,7 @@ set(PROJECT_NAME "AutoEffect")
 set(FORMATS AU VST3 Standalone)
 
 # Reads in VERSION file and sticks in it CURRENT_VERSION variable
-file(READ VERSION CURRENT_VERSION)
+file(READ VERSION.txt CURRENT_VERSION)
 
 # For simplilicity, the name of the project is also the name of the target
 project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
