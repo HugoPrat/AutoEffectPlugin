@@ -2,7 +2,7 @@ name: CI CD
 
 on:
   push:
-    branches: [ "CICD_test" ]
+    branches: [ "main" ]
 
 jobs:
   Build_MacOs:
