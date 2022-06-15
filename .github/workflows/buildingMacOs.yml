@@ -23,8 +23,9 @@ jobs:
       run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
     - name: Unzip it
       run: unzip libtorch-macos-1.11.0.zip
+    -name: Generate targets
+      run: run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
     - name: build all target
       run: cmake --build Builds --config Release
-#      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
     - name: Running tests
       run: ./Builds/Tests
