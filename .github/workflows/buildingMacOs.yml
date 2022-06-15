@@ -24,6 +24,7 @@ jobs:
     - name: Unzip it
       run: unzip libtorch-macos-1.11.0.zip
     - name: build all target
-      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+      run: cmake --build Builds --config Release
+#      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
     - name: Running tests
       run: ./Builds/Tests
