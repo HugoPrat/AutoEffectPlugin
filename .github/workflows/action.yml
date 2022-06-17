@@ -1,0 +1,82 @@
+name: CI CD
+
+on:
+  push:
+    branches: [ "main",  "staging"]
+
+jobs:
+  MacOs:
+
+    runs-on: macos-latest
+
+    steps:
+    #checkout submodules
+    - uses: actions/checkout@v3
+      with:
+        ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
+        submodules: 'recursive'
+    ##Building/Testing Part
+    - name: Download Libtorch
+      run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+           unzip libtorch-macos-1.11.0.zip
+#    - name: Unzip it
+#      run: unzip libtorch-macos-1.11.0.zip
+    - name: Generate targets
+      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+    - name: build all target
+      run: cmake --build Builds --config Release
+    - name: Running tests
+      run: ./Builds/Tests
+
+    ##Release part
+      if: github.ref == 'refs/heads/master'
+          steps:
+            - name: version
+              run: echo "::set-output name=version::$(cat VERSION.txt)"
+              id: version
+            - name: release
+              uses: actions/create-release@v1
+              id: create_release
+              with:
+                draft: false
+                prerelease: false
+                release_name: ${{ steps.version.outputs.version }}
+                tag_name: ${{ steps.version.outputs.version }}
+                body_path: CHANGELOG.md
+              env:
+                GITHUB_TOKEN: ${{ github.token }}
+            - name: Create release zip
+              run: zip autoEffectMacOsRelease.zip Builds/AutoEffect_artefacts/*
+            - name: upload MacOs release
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ github.token }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: ./autoEffectMacOsRelease.zip
+                asset_name: autoEffectMacOsRelease.zip
+                asset_content_type: application/zip
+
+
+
+#  Build_Linux:
+#
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#    - uses: actions/checkout@v3
+#      with:
+#        ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
+#        submodules: 'recursive'
+#    - name: Download Libtorch
+#      run: wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
+#    - name: Unzip it
+#      run: unzip libtorch-cxx11-abi-shared-with-deps-1.11.0+cpu.zip
+#    - name: Install pre-requis
+#      run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
+#    - name: Generate targets
+#      run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+#    - name: build all target
+#      run: cmake --build Builds --config Release
+#    - name: Running tests
+#      run: ./Builds/Tests
