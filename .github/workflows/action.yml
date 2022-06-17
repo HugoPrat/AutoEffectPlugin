@@ -29,33 +29,33 @@ jobs:
       run: ./Builds/Tests
 
     ##Release part
-      if: github.ref == 'refs/heads/master'
-          steps:
-            - name: version
-              run: echo "::set-output name=version::$(cat VERSION.txt)"
-              id: version
-            - name: release
-              uses: actions/create-release@v1
-              id: create_release
-              with:
-                draft: false
-                prerelease: false
-                release_name: ${{ steps.version.outputs.version }}
-                tag_name: ${{ steps.version.outputs.version }}
-                body_path: CHANGELOG.md
-              env:
-                GITHUB_TOKEN: ${{ github.token }}
-            - name: Create release zip
-              run: zip autoEffectMacOsRelease.zip Builds/AutoEffect_artefacts/*
-            - name: upload MacOs release
-              uses: actions/upload-release-asset@v1
-              env:
-                GITHUB_TOKEN: ${{ github.token }}
-              with:
-                upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: ./autoEffectMacOsRelease.zip
-                asset_name: autoEffectMacOsRelease.zip
-                asset_content_type: application/zip
+    if: github.ref == 'refs/heads/master'
+        steps:
+          - name: version
+            run: echo "::set-output name=version::$(cat VERSION.txt)"
+            id: version
+          - name: release
+            uses: actions/create-release@v1
+            id: create_release
+            with:
+              draft: false
+              prerelease: false
+              release_name: ${{ steps.version.outputs.version }}
+              tag_name: ${{ steps.version.outputs.version }}
+              body_path: CHANGELOG.md
+            env:
+              GITHUB_TOKEN: ${{ github.token }}
+          - name: Create release zip
+            run: zip autoEffectMacOsRelease.zip Builds/AutoEffect_artefacts/*
+          - name: upload MacOs release
+            uses: actions/upload-release-asset@v1
+            env:
+              GITHUB_TOKEN: ${{ github.token }}
+            with:
+              upload_url: ${{ steps.create_release.outputs.upload_url }}
+              asset_path: ./autoEffectMacOsRelease.zip
+              asset_name: autoEffectMacOsRelease.zip
+              asset_content_type: application/zip
 
 
 
