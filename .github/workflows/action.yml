@@ -30,8 +30,7 @@ jobs:
     ##Release part
     - name: Deploy
       if: github.ref == 'refs/heads/main'
-      run: ls
-      #uses: ./.github/actions/deploy
+      uses: ./.github/actions/deploy
 
 
 
