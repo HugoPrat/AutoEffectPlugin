@@ -3,6 +3,7 @@ runs:
 #  using: "composite"
   steps:
   - name: test
+    shell: bash
     run: ls
 #  - name: version
 #    shell: bash
