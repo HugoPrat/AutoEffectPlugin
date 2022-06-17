@@ -21,7 +21,6 @@ runs:
     shell: bash
     run: zip autoEffectMacOsRelease.zip Builds/AutoEffect_artefacts/*
   - name: upload MacOs release
-    shell: bash
     uses: actions/upload-release-asset@v1
     env:
       GITHUB_TOKEN: ${{ github.token }}
