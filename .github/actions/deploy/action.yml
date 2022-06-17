@@ -3,6 +3,7 @@ runs:
 #  using: "composite"
   steps:
   - name: version
+    shell: bash
     run: echo "::set-output name=version::$(cat VERSION.txt)"
     id: version
   - name: release
@@ -17,8 +18,10 @@ runs:
     env:
       GITHUB_TOKEN: ${{ github.token }}
   - name: Create release zip
+    shell: bash
     run: zip autoEffectMacOsRelease.zip Builds/AutoEffect_artefacts/*
   - name: upload MacOs release
+    shell: bash
     uses: actions/upload-release-asset@v1
     env:
       GITHUB_TOKEN: ${{ github.token }}
