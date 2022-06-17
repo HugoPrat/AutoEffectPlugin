@@ -29,7 +29,8 @@ jobs:
       run: ./Builds/Tests
 
     ##Release part
-    if: github.ref == 'refs/heads/master'
+    - name: Deploy
+      if: github.ref == 'refs/heads/master'
         steps:
           - name: version
             run: echo "::set-output name=version::$(cat VERSION.txt)"
