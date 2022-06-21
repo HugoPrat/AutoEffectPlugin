@@ -83,18 +83,13 @@ set(SourceFiles
     Source/UI/LoadingWaitingScreen.h
     Source/UI/EffectBlocks.cpp
     Source/UI/EffectBlocks.h
-    )
-
-set(DawGenFiles
-    DawGen_shared/UIElements/SelectFileButton.cpp
-    DawGen_shared/UIElements/SelectFileButton.h
+    Source/UIElements/SelectFileButton.cpp
+    Source/UIElements/SelectFileButton.h
     )
 
 target_sources("${PROJECT_NAME}" PRIVATE ${SourceFiles})
-target_sources("${PROJECT_NAME}" PRIVATE ${DawGenFiles})
 #Add JuceLibraryCode path to include paths, allowing to include JuceHeaders in code
 target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
-target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/DawGen_shared)
 #target_include_directories("${PROJECT_NAME}" PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/DawGen_shared)
 
 # No, we don't want our source buried in extra nested folders
@@ -102,7 +97,6 @@ set_target_properties("${PROJECT_NAME}" PROPERTIES FOLDER "")
 
 # The Xcode source tree should uhhh, still look like the source tree, yo
 source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Source PREFIX "" FILES ${SourceFiles})
-source_group(DawGen_shared PREFIX "" FILES ${DawGenFiles})
 
 # Setup our binary data as a target
 set(AssetsFiles
