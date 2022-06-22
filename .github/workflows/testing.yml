@@ -17,8 +17,8 @@ jobs:
             release_suffix: ubuntu
           - os: macos-latest
             release_suffix: mac
-          - os: windows-latest
-            release_suffix: windows
+#          - os: windows-latest
+#            release_suffix: windows
     runs-on: ${{ matrix.os }}
     steps:
         ##Checkout submodules
