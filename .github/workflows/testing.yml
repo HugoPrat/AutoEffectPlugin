@@ -30,32 +30,30 @@ jobs:
 
       - name: Configure Linux Build
         if: matrix.os == 'ubuntu-latest'
-        steps:
           - name: Download Libtorch
-            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
-          - name: Unzip it
-            run: unzip libtorch-cxx11-abi-shared-with-deps-1.11.0+cpu.zip
-          - name: Install Prerequisites
-            run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
-        #run: echo "Ubuntu Latest" > release_ubuntu
+            run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
+      - name: Unzip it
+        run: unzip libtorch.zip
+      - name: Install Prerequisites Linux
+        if: matrix.os == 'ubuntu-latest'
+          - name: Installing
+          run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
       
-      - name: Configure Mac Build
-        if: matrix.os == 'macos-latest'
-        steps:
-          - name: Download Libtorch
-            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
-          - name: Unzip it
-            run: unzip libtorch-macos-1.11.0.zip
-#        run: echo "MacOS Latest" > release_mac
-
-      - name: Configure Windows Build
-        if: matrix.os == 'windows-latest'
-        steps:
-          - name: Download Libtorch
-            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
-          - name: Unzip it
-            run: unzip libtorch-win-shared-with-deps-1.11.0+cpu.zip
-#        run: echo "Windows Latest" > release_windows
+#      - name: Configure Mac Build
+#        if: matrix.os == 'macos-latest'
+#        steps:
+#          - name: Download Libtorch
+#            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+#          - name: Unzip it
+#            run: unzip libtorch-macos-1.11.0.zip
+#
+#      - name: Configure Windows Build
+#        if: matrix.os == 'windows-latest'
+#        steps:
+#          - name: Download Libtorch
+#            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
+#          - name: Unzip it
+#            run: unzip libtorch-win-shared-with-deps-1.11.0+cpu.zip
 
       - name: Generate targets
         run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
