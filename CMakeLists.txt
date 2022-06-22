@@ -184,10 +184,6 @@ endif (MSVC)]]
 
 
 # ========TEST PART=========
-# Required for ctest (which is just easier for cross-platform CI)
-# include(CTest) does this too, but adds tons of targets we don't want
-# See: https://github.com/catchorg/Catch2/issues/2026
-# You could forgo ctest and call ./Tests directly from the build dir
 enable_testing()
 
 # CONFIGURE_DEPENDS / Clion's CMake integration makes globbing absolutely fine
