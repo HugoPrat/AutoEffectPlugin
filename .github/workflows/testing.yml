@@ -27,36 +27,30 @@ jobs:
           ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
           submodules: 'recursive'
 
-      - name: Download Libtorch
-        if: matrix.os == 'ubuntu-latest'
-        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
-        if: matrix.os == 'macos-latest'
-        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
-      - name: Unzip it
-        run: unzip libtorch.zip
       - name: Install Prerequisites Linux
         if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
-      
-#      - name: Configure Mac Build
-#        if: matrix.os == 'macos-latest'
-#        steps:
-#          - name: Download Libtorch
-#            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
-#          - name: Unzip it
-#            run: unzip libtorch-macos-1.11.0.zip
-#
-#      - name: Configure Windows Build
-#        if: matrix.os == 'windows-latest'
-#        steps:
-#          - name: Download Libtorch
-#            run: wget https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
-#          - name: Unzip it
-#            run: unzip libtorch-win-shared-with-deps-1.11.0+cpu.zip
+
+      - name: Download Libtorch Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
+
+      - name: Download Libtorch MacOs
+        if: matrix.os == 'macos-latest'
+        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+
+      - name: Download Libtorch Windows
+        if: matrix.os == 'windows-latest'
+        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
+
+      - name: Unzip it
+        run: unzip libtorch.zip
 
       - name: Generate targets
         run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+
       - name: build all target
         run: cmake --build Builds --config Release
+
       - name: Running tests
         run: ./Builds/Tests
