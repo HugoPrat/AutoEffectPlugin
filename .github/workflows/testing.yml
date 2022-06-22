@@ -35,8 +35,7 @@ jobs:
         run: unzip libtorch.zip
       - name: Install Prerequisites Linux
         if: matrix.os == 'ubuntu-latest'
-          - name: Installing
-          run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
+        run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
       
 #      - name: Configure Mac Build
 #        if: matrix.os == 'macos-latest'
