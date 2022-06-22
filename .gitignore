@@ -5,6 +5,9 @@
 JuceLibraryCode/
 Builds/*
 
+#MacOs
+.DS_Store
+
 # Compiled Object files
 *.slo
 *.lo
