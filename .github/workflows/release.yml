@@ -25,6 +25,8 @@ jobs:
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ github.token }}
+      - name: set tag
+        run: echo "::set-output name=tag-name::$(echo refs/tags/${{ github.run_id }})"
 
   build_release:
     name: Build Release
