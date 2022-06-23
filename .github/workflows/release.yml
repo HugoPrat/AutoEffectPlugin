@@ -16,7 +16,7 @@ jobs:
         id: version
       - name: release initialization
         uses: softprops/action-gh-release@v1
-        id: release_initialization
+        id: create_release
         with:
           draft: false
           prerelease: false
@@ -67,20 +67,20 @@ jobs:
       - name: Unzip it
         run: unzip libtorch.zip
 
-      - name: Generate targets
-        run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
-      - name: build all target
-        run: cmake --build Builds --config Release
+     # - name: Generate targets
+     #   run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+     # - name: build all target
+     #   run: cmake --build Builds --config Release
 
       - name: Create release zip
-        run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/AutoEffect_artefacts/*
+        run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip VERSION.txt #Builds/AutoEffect_artefacts/*
 
       - name: upload zip to release
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: "refs/tags/${{ github.run_id }}"
+          tag_name: ${{ needs.create_release.outputs.tag-name }}
           files: autoEffect${{ matrix.release_suffix }}sRelease.zip
 
 #      - name: upload zip to release
