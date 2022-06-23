@@ -21,6 +21,7 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: false
+          tag_name: ${{ steps.version.outputs.version }}
           body_path: CHANGELOG.md
 
   build_release:
