@@ -13,13 +13,15 @@ jobs:
       - name: version
         run: echo "::set-output name=version::$(cat VERSION.txt)"
         id: version
+      - name: see
+        run: echo ${{ steps.version.outputs.version }}
       - name: release initialization
         uses: actions/create-release@v1
         id: create_release
         with:
           draft: false
           prerelease: false
-          release_name: ${{ steps.version.outputs.version }}
+          release_name: "${{ steps.version.outputs.version }}"
 #          tag_name: ${{ steps.version.outputs.version }}
           tag_name: "YES"
           body_path: CHANGELOG.md
