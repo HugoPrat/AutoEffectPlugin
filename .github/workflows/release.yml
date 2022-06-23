@@ -16,7 +16,7 @@ jobs:
         id: version
       - name: release initialization
         uses: actions/create-release@v1
-        id: create_release
+        id: create_initialization
         with:
           draft: false
           prerelease: false
@@ -35,9 +35,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            release_suffix: ubuntu
+            release_suffix: Ubuntu
           - os: macos-latest
-            release_suffix: mac
+            release_suffix: Mac
 #          - os: windows-latest
 #            release_suffix: windows
     runs-on: ${{ matrix.os }}
@@ -86,7 +86,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create_initialization.outputs.upload_url }}
           asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
           asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
           asset_content_type: application/zip
