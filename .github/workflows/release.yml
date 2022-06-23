@@ -15,12 +15,12 @@ jobs:
         run: echo "::set-output name=version::$(cat VERSION.txt)"
         id: version
       - name: release initialization
-        uses: actions/create-release@v1
-        id: create_initialization
+        uses: softprops/action-gh-release@v1
+        id: release_initialization
         with:
           draft: false
           prerelease: false
-          release_name: "${{ steps.version.outputs.version }}"
+          name: "${{ steps.version.outputs.version }}"
           tag_name: "refs/tags/${{ github.run_id }}"
           body_path: CHANGELOG.md
         env:
@@ -75,21 +75,23 @@ jobs:
       - name: Create release zip
         run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/AutoEffect_artefacts/*
 
-#      - name: Release
-#        uses: softprops/action-gh-release@v1
-#        with:
-#          tag_name: ${{ needs.create_release.outputs.tag-name }}
-#          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
-
       - name: upload zip to release
-        uses: actions/upload-release-asset@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          upload_url: ${{ needs.create_initialization.outputs.upload_url }}
-          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
-          asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
-          asset_content_type: application/zip
+          tag_name: "refs/tags/${{ github.run_id }}"
+          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
+
+#      - name: upload zip to release
+#        uses: softprops/action-gh-release@v1
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
+#        with:
+#          upload_url: ${{ needs.create_initialization.outputs.upload_url }}
+#          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
+#          asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
+#          asset_content_type: application/zip
 
 #  MacOs:
 #
