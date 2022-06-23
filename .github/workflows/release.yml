@@ -13,16 +13,17 @@ jobs:
       - name: version
         run: echo "::set-output name=version::$(cat VERSION.txt)"
         id: version
-      - name: Create Release
+      - name: release initialization
+        uses: actions/create-release@v1
         id: create_release
-        uses: softprops/action-gh-release@v1
         with:
-          name: ${{ steps.version.outputs.version }}
           draft: false
           prerelease: false
-          generate_release_notes: false
+          release_name: ${{ steps.version.outputs.version }}
           tag_name: ${{ steps.version.outputs.version }}
           body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
   build_release:
     name: Build Release
@@ -73,11 +74,21 @@ jobs:
       - name: Create release zip
         run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/AutoEffect_artefacts/*
 
-      - name: Release
-        uses: softprops/action-gh-release@v1
+#      - name: Release
+#        uses: softprops/action-gh-release@v1
+#        with:
+#          tag_name: ${{ needs.create_release.outputs.tag-name }}
+#          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
+
+      - name: upload zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: ${{ needs.create_release.outputs.tag-name }}
-          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
+          asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
+          asset_content_type: application/zip
 
 #  MacOs:
 #
