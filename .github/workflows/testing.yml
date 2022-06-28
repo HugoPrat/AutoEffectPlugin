@@ -14,9 +14,9 @@ jobs:
         os: [ubuntu-latest, macos-latest]
         include:
           - os: ubuntu-latest
-            release_suffix: ubuntu
+            release_suffix: Ubuntu
           - os: macos-latest
-            release_suffix: mac
+            release_suffix: MacOs
 #          - os: windows-latest
 #            release_suffix: windows
     runs-on: ${{ matrix.os }}
