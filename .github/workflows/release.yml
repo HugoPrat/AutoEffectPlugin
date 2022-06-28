@@ -1,106 +1,106 @@
-#name: Release
-#
-#on:
-#  push:
-#    branches: [ "main"]
-#
-#jobs:
-#
-#  create_release:
-#    name: Create Release
-#    runs-on: ubuntu-latest
-#    outputs:
-#      url: ${{ steps.set_output.outputs.url }}
-#    steps:
-#      - uses: actions/checkout@v3
-#      - name: version
-#        run: echo "::set-output name=version::$(cat VERSION.txt)"
-#        id: version
-#      - name: release initialization
-#        uses: actions/create-release@v1
-#        id: release_initialization
-#        with:
-#          draft: false
-#          prerelease: false
-#          release_name: ${{ steps.version.outputs.version }}
-#          tag_name: refs/tags/${{ github.run_id }}
-#          body_path: CHANGELOG.md
-#        env:
-#          GITHUB_TOKEN: ${{ github.token }}
-#      - name: show me
-#        run: echo ${{ steps.release_initialization.outputs.upload_url }}
-#      - name: set output
-#        id: set_output
-#        run: echo "::set-output name=url::$(echo ${{ steps.release_initialization.outputs.upload_url }})"
-#
-#  build_release:
-#    name: Build Release
-#    needs: create_release
-#    strategy:
-#      matrix:
-##        os: [ubuntu-latest, macos-latest, windows-latest] Not windows yet
-#        os: [ubuntu-latest, macos-latest]
-#        include:
-#          - os: ubuntu-latest
-#            release_suffix: Ubuntu
-#          - os: macos-latest
-#            release_suffix: Mac
-##          - os: windows-latest
-##            release_suffix: windows
-#    runs-on: ${{ matrix.os }}
-#    steps:
-#      - name: Checkout code
-#        uses: actions/checkout@v3
-#        with:
-#          ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
-#          submodules: 'recursive'
-#
-#      - name: show_me
-#        run: echo ${{needs.create_release.outputs.output1}}
-#
-#      - name: Install Prerequisites Linux
-#        if: matrix.os == 'ubuntu-latest'
-#        run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
-#
-#      - name: Download Libtorch Linux
-#        if: matrix.os == 'ubuntu-latest'
-#        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
-#
-#      - name: Download Libtorch MacOs
-#        if: matrix.os == 'macos-latest'
-#        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
-#
-##      - name: Download Libtorch Windows
-##        if: matrix.os == 'windows-latest'
-##        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
-#
-#      - name: Unzip it
-#        run: unzip libtorch.zip
-#
-#     # - name: Generate targets
-#     #   run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
-#     # - name: build all target
-#     #   run: cmake --build Builds --config Release
-#
-#      - name: Create release zip
-#        run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip VERSION.txt #Builds/AutoEffect_artefacts/*
-#
-##      - name: upload zip to release
-##        uses: softprops/action-gh-release@v1
-##        env:
-##          GITHUB_TOKEN: ${{ github.token }}
-##        with:
-##          tag_name: ${{needs.create_release.outputs.output1}}
-##          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
+name: Release
+
+on:
+  push:
+    branches: [ "main"]
+
+jobs:
+
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      url: ${{ steps.set_output.outputs.url }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: version
+        run: echo "::set-output name=version::$(cat VERSION.txt)"
+        id: version
+      - name: release initialization
+        uses: actions/create-release@v1
+        id: release_initialization
+        with:
+          draft: false
+          prerelease: false
+          release_name: ${{ steps.version.outputs.version }}
+          tag_name: refs/tags/${{ github.run_id }}
+          body_path: CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: show me
+        run: echo ${{ steps.release_initialization.outputs.upload_url }}
+      - name: set output
+        id: set_output
+        run: echo "::set-output name=url::${{ steps.release_initialization.outputs.upload_url }}"
+
+  build_release:
+    name: Build Release
+    needs: create_release
+    strategy:
+      matrix:
+#        os: [ubuntu-latest, macos-latest, windows-latest] Not windows yet
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            release_suffix: Ubuntu
+          - os: macos-latest
+            release_suffix: Mac
+#          - os: windows-latest
+#            release_suffix: windows
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ssh-key: ${{ secrets.SUBMODULE_CONTENT_PULL_KEY }}
+          submodules: 'recursive'
+
+      - name: show_me
+        run: echo ${{needs.create_release.outputs.url}}
+
+      - name: Install Prerequisites Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install libxcursor-dev libxrandr-dev libxinerama-dev libxi-dev libasound2-dev
+
+      - name: Download Libtorch Linux
+        if: matrix.os == 'ubuntu-latest'
+        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-cxx11-abi-shared-with-deps-1.11.0%2Bcpu.zip
+
+      - name: Download Libtorch MacOs
+        if: matrix.os == 'macos-latest'
+        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-macos-1.11.0.zip
+
+#      - name: Download Libtorch Windows
+#        if: matrix.os == 'windows-latest'
+#        run: wget -O libtorch.zip https://download.pytorch.org/libtorch/cpu/libtorch-win-shared-with-deps-1.11.0%2Bcpu.zip
+
+      - name: Unzip it
+        run: unzip libtorch.zip
+
+     # - name: Generate targets
+     #   run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+     # - name: build all target
+     #   run: cmake --build Builds --config Release
+
+      - name: Create release zip
+        run: zip autoEffect${{ matrix.release_suffix }}sRelease.zip VERSION.txt #Builds/AutoEffect_artefacts/*
+
 #      - name: upload zip to release
-#        uses: actions/upload-release-asset@v1
+#        uses: softprops/action-gh-release@v1
 #        env:
 #          GITHUB_TOKEN: ${{ github.token }}
 #        with:
-#          upload_url: ${{needs.create_release.outputs.url}}
-#          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
-#          asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
-#          asset_content_type: application/zip
+#          tag_name: ${{needs.create_release.outputs.output1}}
+#          files: autoEffect${{ matrix.release_suffix }}sRelease.zip
+      - name: upload zip to release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          upload_url: ${{needs.create_release.outputs.url}}
+          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
+          asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
+          asset_content_type: application/zip
 
 
 

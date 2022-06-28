@@ -1,40 +1,40 @@
-name: OUI
-
-on:
-  push:
-    branches: [ "main",  "staging"]
-
-jobs:
-  job1:
-    runs-on: macos-latest
-    # Map a step output to a job output
-    outputs:
-      output1: ${{ steps.step1.outputs.test }}
-      output2: ${{ steps.step2.outputs.test }}
-    steps:
-      - uses: actions/checkout@v3
-      - name: version
-        run: echo "::set-output name=version::$(cat VERSION.txt)"
-        id: version
-      - name: release
-        uses: actions/create-release@v1
-        id: create_release
-        with:
-          draft: false
-          prerelease: false
-          release_name: ${{ steps.version.outputs.version }}
-          tag_name: refs/tags/${{ github.run_id }}
-          body_path: CHANGELOG.md
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Create release zip
-        run: zip autoEffectMacOsRelease.zip CHANGELOG.md
-      - name: upload MacOs release
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./autoEffectMacOsRelease.zip
-          asset_name: autoEffectMacOsRelease.zip
-          asset_content_type: application/zip
+#name: OUI
+#
+#on:
+#  push:
+#    branches: [ "main",  "staging"]
+#
+#jobs:
+#  job1:
+#    runs-on: macos-latest
+#    # Map a step output to a job output
+#    outputs:
+#      output1: ${{ steps.step1.outputs.test }}
+#      output2: ${{ steps.step2.outputs.test }}
+#    steps:
+#      - uses: actions/checkout@v3
+#      - name: version
+#        run: echo "::set-output name=version::$(cat VERSION.txt)"
+#        id: version
+#      - name: release
+#        uses: actions/create-release@v1
+#        id: create_release
+#        with:
+#          draft: false
+#          prerelease: false
+#          release_name: ${{ steps.version.outputs.version }}
+#          tag_name: refs/tags/${{ github.run_id }}
+#          body_path: CHANGELOG.md
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
+#      - name: Create release zip
+#        run: zip autoEffectMacOsRelease.zip CHANGELOG.md
+#      - name: upload MacOs release
+#        uses: actions/upload-release-asset@v1
+#        env:
+#          GITHUB_TOKEN: ${{ github.token }}
+#        with:
+#          upload_url: ${{ steps.create_release.outputs.upload_url }}
+#          asset_path: ./autoEffectMacOsRelease.zip
+#          asset_name: autoEffectMacOsRelease.zip
+#          asset_content_type: application/zip
