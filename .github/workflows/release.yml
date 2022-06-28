@@ -17,7 +17,7 @@ jobs:
         run: echo "::set-output name=version::$(cat VERSION.txt)"
         id: version
       - name: release initialization
-        uses: softprops/action-gh-release@v1
+        uses: actions/create-release@v1
         id: release_initialization
         with:
           draft: false
