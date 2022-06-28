@@ -1,3 +1,9 @@
+name: OUI
+
+on:
+  push:
+    branches: [ "main",  "staging"]
+
 jobs:
   job1:
     runs-on: ubuntu-latest
