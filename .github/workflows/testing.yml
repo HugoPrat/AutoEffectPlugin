@@ -48,7 +48,7 @@ jobs:
         run: unzip libtorch.zip
 
       - name: Generate targets
-        run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+        run: cmake -B Builds
 
       - name: build all target
         run: cmake --build Builds --config Release

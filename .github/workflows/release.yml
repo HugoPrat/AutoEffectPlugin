@@ -85,9 +85,16 @@ jobs:
 
       # Building target steps
       - name: Generate targets
-        run: cmake -B Builds -DCMAKE_PREFIX_PATH=./libtorch
+        run: cmake -DDEPLOY:BOOL=TRUE -B Builds
       - name: build all target
         run: cmake --build Builds --config Release
+
+      #Copy libtorch needed libs to result format products, not the best way yet
+      - name: Copy lib to app result location
+        run: |
+          cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/Standalone/AutoEffect.app/Contents/
+          cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/AU/AutoEffect.component/Contents/
+          cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/VST3/AutoEffect.vst3/Contents/
 
       - name: Create release zip
         run: zip -r autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/AutoEffect_artefacts/*
@@ -99,6 +106,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{needs.create_release.outputs.url}}
-          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
+          asset_path: ./autoEffect${{ cmatrix.release_suffix }}sRelease.zip
           asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
           asset_content_type: application/zip

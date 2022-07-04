@@ -8,7 +8,7 @@ set(PROJECT_NAME "AutoEffect")
 
 # Set the plugin formats you'll be building here.
 # Valid formats: AAX Unity VST AU AUv3 Standalone
-set(FORMATS AU VST3 Standalone)
+set(FORMATS "AU VST3 Standalone")
 
 # Reads in VERSION file and sticks in it CURRENT_VERSION variable
 file(READ VERSION.txt CURRENT_VERSION)
@@ -18,6 +18,20 @@ project(${PROJECT_NAME} VERSION ${CURRENT_VERSION})
 
 # By default we don't want Xcode schemes to be made for modules, etc
 set(CMAKE_XCODE_GENERATE_SCHEME OFF)
+
+# add -DDEPLOY:BOOL=TRUE to cmake command to change this var, define if the process is in DEPLOY mode, false by default
+SET(DEPLOY 0 CACHE BOOL "If we want to build for test or to deploy project")
+
+# Set rapth of target to is own location instead of local path if the process is in deploy mode
+if (DEPLOY)
+    set(CMAKE_MACOSX_RPATH ON)
+    if (APPLE)
+        set(CMAKE_INSTALL_RPATH "@loader_path/../")
+    else()
+        set(CMAKE_INSTALL_RPATH "$ORIGIN/../")
+    endif()
+    set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+endif()
 
 # Building universals increases build times
 # set(CMAKE_OSX_ARCHITECTURES arm64 x86_64)
@@ -160,6 +174,7 @@ target_compile_definitions("${PROJECT_NAME}"
     JUCE_USE_CURL=0     # If you remove this, add `NEEDS_CURL TRUE` to the `juce_add_plugin` call
     JUCE_VST3_CAN_REPLACE_VST2=0)
 
+set(Torch_DIR libtorch/share/cmake/Torch)
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
@@ -173,53 +188,65 @@ target_link_libraries("${PROJECT_NAME}"
     juce::juce_recommended_warning_flags
     ${TORCH_LIBRARIES})
 
-#[[if (MSVC)
-    file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-    add_custom_command(TARGET "${PROJECT_NAME}"
-                       POST_BUILD
-                       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-                       ${TORCH_DLLS}
-                       $<TARGET_FILE_DIR:"${PROJECT_NAME}">)
-endif (MSVC)]]
+set_target_properties("${PROJECT_NAME}"
+  PROPERTIES
+  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/result"
+  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/result"
+  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/result"
+)
+
+#if (DEPLOY)
+#    file(GLOB TORCH_DLLS "libtorch/lib/*.dylib")
+#    add_custom_command(TARGET "${PROJECT_NAME}" POST_BUILD 
+#                COMMAND ${CMAKE_COMMAND} -E copy libAssets.a "$TARGET_BUILD_DIR/$EXECUTABLE_FOLDER_PATH"#/Users/hugoprat/SONY/tmp/AutoEffectPlugin/tmp
+#                #${TORCH_DLLS} "./Builds/"
+#    )
+#    # ${CMAKE_BINARY_DIR})
+#                       #$<TARGET_FILE_DIR:"${PROJECT_NAME}">)
+#endif()
 
 
 # ========TEST PART=========
-enable_testing()
+if (!DEPLOY)
 
-# CONFIGURE_DEPENDS / Clion's CMake integration makes globbing absolutely fine
-file(GLOB_RECURSE TestFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.cc" "${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.h")
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Tests PREFIX "" FILES ${TestFiles})
+    enable_testing()
 
-# Use googletest on the devel branch
-Include(FetchContent)
-FetchContent_Declare(
-    googletest
-    URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
-)
-# For Windows: Prevent overriding the parent project's compiler/linker settings
-set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-FetchContent_MakeAvailable(googletest) # find_package equivalent
+    # CONFIGURE_DEPENDS / Clion's CMake integration makes globbing absolutely fine
+    file(GLOB_RECURSE TestFiles CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.cc" "${CMAKE_CURRENT_SOURCE_DIR}/Tests/*.h")
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Tests PREFIX "" FILES ${TestFiles})
 
-# Setup the test executable, using C++ 20
-add_executable(Tests ${TestFiles})
-target_compile_features(Tests PRIVATE cxx_std_20)
+    # Use googletest on the devel branch
+    Include(FetchContent)
+    FetchContent_Declare(
+        googletest
+        URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip
+    )
+    # For Windows: Prevent overriding the parent project's compiler/linker settings
+    set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(googletest) # find_package equivalent
 
-# Our test executable also wants to know about our plugin code...
-target_include_directories(Tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
-target_link_libraries(Tests PRIVATE gtest_main "${PROJECT_NAME}" ${JUCE_DEPENDENCIES})
+    # Setup the test executable, using C++ 20
+    add_executable(Tests ${TestFiles})
+    target_compile_features(Tests PRIVATE cxx_std_20)
 
-# Make an Xcode Scheme for the test executable so we can run tests in the IDE
-set_target_properties(Tests PROPERTIES XCODE_GENERATE_SCHEME ON)
+    # Our test executable also wants to know about our plugin code...
+    target_include_directories(Tests PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Source)
+    target_link_libraries(Tests PRIVATE gtest_main "${PROJECT_NAME}" ${JUCE_DEPENDENCIES})
 
-# Organize the test source in the Tests/ folder in the IDE
-source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Tests PREFIX "" FILES ${TestFiles})
+    # Make an Xcode Scheme for the test executable so we can run tests in the IDE
+    set_target_properties(Tests PROPERTIES XCODE_GENERATE_SCHEME ON)
 
-include(GoogleTest)
-gtest_discover_tests(Tests)
+    # Organize the test source in the Tests/ folder in the IDE
+    source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR}/Tests PREFIX "" FILES ${TestFiles})
 
-# Color our warnings and errors
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-   add_compile_options (-fdiagnostics-color=always)
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-   add_compile_options (-fcolor-diagnostics)
-endif ()
+    include(GoogleTest)
+    gtest_discover_tests(Tests)
+
+    # Color our warnings and errors
+    if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+       add_compile_options (-fdiagnostics-color=always)
+    elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+       add_compile_options (-fcolor-diagnostics)
+    endif ()
+
+endif()
