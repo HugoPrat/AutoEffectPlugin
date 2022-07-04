@@ -95,8 +95,9 @@ jobs:
           ls Builds/
           ls Builds/result/
 
-      #Copy libtorch needed libs to result format products, not the best way yet
+      #Copy libtorch needed libs to result format products, work for MacOs but a little hardcode, not the best way yet
       - name: Copy lib to app result location
+        if: matrix.os == 'macos-latest'
         run: |
           cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/Standalone/AutoEffect.app/Contents/
           cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/AU/AutoEffect.component/Contents/
