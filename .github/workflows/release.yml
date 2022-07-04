@@ -106,6 +106,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           upload_url: ${{needs.create_release.outputs.url}}
-          asset_path: ./autoEffect${{ cmatrix.release_suffix }}sRelease.zip
+          asset_path: ./autoEffect${{ matrix.release_suffix }}sRelease.zip
           asset_name: autoEffect${{ matrix.release_suffix }}sRelease.zip
           asset_content_type: application/zip
