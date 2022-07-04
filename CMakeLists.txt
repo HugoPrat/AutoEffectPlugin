@@ -207,7 +207,7 @@ set_target_properties("${PROJECT_NAME}"
 
 
 # ========TEST PART=========
-if (!DEPLOY)
+if (NOT DEPLOY)
 
     enable_testing()
 

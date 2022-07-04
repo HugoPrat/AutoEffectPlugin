@@ -89,6 +89,12 @@ jobs:
       - name: build all target
         run: cmake --build Builds --config Release
 
+      - name: TEST
+        run: |
+        ls
+        ls Builds/
+        ls Builds/result/
+
       #Copy libtorch needed libs to result format products, not the best way yet
       - name: Copy lib to app result location
         run: |
