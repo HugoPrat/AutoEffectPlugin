@@ -8,7 +8,7 @@ set(PROJECT_NAME "AutoEffect")
 
 # Set the plugin formats you'll be building here.
 # Valid formats: AAX Unity VST AU AUv3 Standalone
-set(FORMATS "AU VST3 Standalone")
+set(FORMATS AU VST3 Standalone)
 
 # Reads in VERSION file and sticks in it CURRENT_VERSION variable
 file(READ VERSION.txt CURRENT_VERSION)
