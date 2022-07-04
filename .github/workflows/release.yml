@@ -104,7 +104,7 @@ jobs:
           cp libtorch/lib/libc10.dylib libtorch/lib/libtorch.dylib libtorch/lib/libtorch_cpu.dylib libtorch/lib/libiomp5.dylib Builds/result/VST3/AutoEffect.vst3/Contents/
 
       - name: Create release zip
-        run: zip -r autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/AutoEffect_artefacts/*
+        run: zip -r autoEffect${{ matrix.release_suffix }}sRelease.zip Builds/result/*
 
       # Uploading zip with the Url passed through needs env
       - name: upload zip to release
